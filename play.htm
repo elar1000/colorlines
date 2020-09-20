@@ -1,0 +1,245 @@
+<html>
+<head>
+<title>ColorLines</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<link rel="stylesheet" type="text/css" href="Scripts/theme.css" />
+<script type="text/javascript" src="Scripts/game.js"></script>
+</head>
+<body>
+<script>
+//muutuja, mis näitab, mlline ruut on momendil valitud
+var selected="";
+//muutuja, mis näitab, kas kasutaja saab momendil käiku teha
+var play=false;
+//muutuja, mis näitab, kas praegu on mäng käsil
+var game=false;
+//muutuja, mis näitab mispidi saab kahe punkti vahel liikuda
+var way= new Array();
+//muutja, mis näitab, kas me näitame järgmiseid või mitte
+var showNext=true;
+//muutuja, mis näitab, kas kasutaja on vaadanud see kord NEXT kuulikesi
+var seenNext=false;
+//mitme erineva värviga mängitakse
+var level=7;
+//muutuja kasutaja skoori lugemiseks
+var player_score=0;
+//muutuja skoori hoidmiseks
+var scr_array=new Array();
+var board =[0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0];
+var rsBoard =[-1,-1,-1,-1,-1,-1,-1,-1,-1,
+                -1,-1,-1,-1,-1,-1,-1,-1,-1,
+				-1,-1,-1,-1,-1,-1,-1,-1,-1,
+				-1,-1,-1,-1,-1,-1,-1,-1,-1,
+				-1,-1,-1,-1,-1,-1,-1,-1,-1,
+				-1,-1,-1,-1,-1,-1,-1,-1,-1,
+				-1,-1,-1,-1,-1,-1,-1,-1,-1,
+                -1,-1,-1,-1,-1,-1,-1,-1,-1,
+                -1,-1,-1,-1,-1,-1,-1,-1,-1];
+//järgmised 3 kuuli, mis lauale tulevad
+var next=new Array();
+
+</script>
+<table border="0" cellpadding="0" cellspacing="0" class="main">
+  <tr>
+    <td class="lefttopborder"></td>
+    <td class="topborder"></td>
+    <td class="lefttopborder"></td>
+    <td class="topborder"></td>
+    <td class="righttopborder"></td>
+  </tr>
+  <tr>
+    <td class="leftborder"></td>
+    <td valign="top" class="sidebar">
+        <table width="100%" cellspacing="0" cellpadding="0" >
+            <tr>
+              <td class="head">
+              <strong>
+                <font color="red">C</font><font
+                color="yellow">O</font><font 
+                color="blue">L</font><font 
+                color="violet">O</font><font 
+                color="cyan">R</font><br />
+                <i>LINES</i>
+                </strong>
+              </td>
+            </tr>
+            <tr>
+              <td class="topborder">
+              </td>
+            </tr>
+            <tr>
+              <td class="score"><strong>Score</strong></td>
+            </tr>
+            <tr>
+              <td class="topborder">
+              </td>
+            </tr>
+            <tr>
+              <td class="score" id="score"><strong>000000</strong></td>
+            </tr>
+            <tr>
+              <td class="topborder">
+              </td>
+            </tr>
+            <tr>
+              <td align="center" valign="top">
+                <input type="button" id="hideNext" value="Hide next" onclick="hideNext(this);"/>
+                <table class="next" id="next" cellspacing="4" cellpadding="0"  border="0">
+                    <tr>
+                        <td ><img src="Images/cell.png"  alt="next1" id="next1" /></td>
+                    </tr>
+                    <tr>
+                        <td><img src="Images/cell.png"  alt="next2"id="next2" /></td>
+                    </tr>
+                    <tr>
+                        <td><img src="Images/cell.png" alt="next3"id="next3" /></td>
+                    </tr> 
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td class="topborder">
+              </td>
+            </tr>
+            <tr>
+                <td class="buttons">
+                    <input type="button" value="New game" onclick="newGame();" /><br />
+                    <label >Game level</label><br />
+                    <select name="level" id="level">
+                        <option value="5">Easy</option>
+                        <option value="6">Medium</option>
+                        <option value="7">Hard</option>
+                        <option value="8">Impossible</option>
+                    </select><br />
+					<audio loop src="Music/theme.mp3"></audio>
+					 
+					<input type="button" id="music" value="Play music" onclick="music(this);"/>
+					<input type="button" value="Credits" onclick="credits();"/><br />
+                </td>
+            </tr>
+            
+        </table>
+    </td>
+    <td class="leftborder"></td>
+     <td class="main-content">
+        <table border="0" cellspacing="2" cellpadding="0" class="board" id="board" >
+        <tr id="row1">
+          <td><img src="Images/cell.png" alt="cell" id="cell0" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell1" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell2" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell3" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell4" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell5" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell6" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell7" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell8" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+        </tr>
+        <tr id="row2">
+          <td><img src="Images/cell.png" alt="cell" id="cell9" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell10" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell11" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell12" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell13" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell14" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell15" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell16" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell17" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+        </tr>
+        <tr id="row3">
+          <td><img src="Images/cell.png" alt="cell" id="cell18" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell19" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell20" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell21" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell22" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell23" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell24" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell25" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell26" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+        </tr>
+        <tr id="row4">
+          <td><img src="Images/cell.png" alt="cell" id="cell27" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell28" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td ><img src="Images/cell.png" alt="cell" id="cell29" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell30" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell31" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell32" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell33" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell34" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell35" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+        </tr>
+        <tr id="row5">
+          <td><img src="Images/cell.png" alt="cell" id="cell36" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell37" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell38" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell39" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell40" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell41" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell42" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell43" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell44" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+        </tr>
+        <tr id="row6">
+          <td><img src="Images/cell.png" alt="cell" id="cell45" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell46" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell47" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell48" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell49" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell50" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell51" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td ><img src="Images/cell.png" alt="cell" id="cell52" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell53" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+        </tr>
+        <tr id="row7">
+          <td><img src="Images/cell.png" alt="cell" id="cell54" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell55" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell56" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell57" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell58" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell59" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell60" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell61" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell62" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+        </tr>
+        <tr id="row8">
+          <td><img src="Images/cell.png" alt="cell" id="cell63" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell64" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell65" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell66" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell67" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell68" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell69" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell70" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell71" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+        </tr>
+        <tr id="row9">
+          <td><img src="Images/cell.png" alt="cell" id="cell72" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell73" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell74" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell75" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell76" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell77" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell78" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell79" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+          <td><img src="Images/cell.png" alt="cell" id="cell80" onclick="selectCell(this);" onmouseover="overCell(this);" onmouseout="exitCell(this);"></td>
+        </tr>
+      </table>
+    </td><td class="rightborder"></td>
+  </tr>
+   <tr>
+    <td class="leftbottomborder"></td>
+    <td class="bottomborder"></td>
+    <td class="leftbottomborder"></td>
+    <td class="bottomborder"></td>
+    <td class="rightbottomborder"></td>
+  </tr>
+</table>
+</body>
+</html>
